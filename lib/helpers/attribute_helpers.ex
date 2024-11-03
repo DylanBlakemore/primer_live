@@ -551,70 +551,80 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
 
   ## Tests
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id("my-input-id", nil, nil, "", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id("my-input-id", nil, nil, "", nil, false)
       "my-input-id"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, "my-id", nil, "", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id("my-input-id", nil, nil, "", nil, true)
+      "my-input-id"
+
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id("my-input-id", nil, nil, "", "my-value", true)
+      "my-input-id-my-value"
+
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, "my-id", nil, "", nil, false)
       "my-id"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :select, "", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :select, "", nil, false)
       nil
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :select, "[my-input-name]", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :select, "[my-input-name]", nil, false)
       "[my-input-name]"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :select, "[my-input-name][]", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :select, "[my-input-name][]", nil, false)
       "[my-input-name]"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "", nil, false)
       nil
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "my-input-name", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "my-input-name", nil, false)
       "my-input-name"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "my-input-name", "my-value")
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "my-input-name", "my-value", false)
       "my-input-name[my-value]"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "[my-input-name]", "my-value")
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "[my-input-name]", "my-value", false)
       "[my-input-name][my-value]"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "[my-input-name][]", "my-value")
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "[my-input-name][]", "my-value", false)
       "[my-input-name][my-value]"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "[my-input-name][]", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :checkbox, "[my-input-name][]", nil, false)
       "[my-input-name][]"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :radio_button, "", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :radio_button, "", nil, false)
       nil
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :radio_button, "my-input-name", nil)
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :radio_button, "my-input-name", nil, false)
       "my-input-name"
 
-      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :radio_button, "my-input-name", "my-value")
+      iex> PrimerLive.Helpers.AttributeHelpers.input_id(nil, nil, :radio_button, "my-input-name", "my-value", false)
       "my-input-name[my-value]"
 
   """
-  def input_id(input_id, _id, _input_type, _input_name, _value_for_derived_label)
+  def input_id(input_id, _id, _input_type, _input_name, value_for_derived_label, is_multiple)
+      when not is_nil(input_id) and is_multiple and is_binary(value_for_derived_label),
+      do: "#{input_id}-#{value_for_derived_label}"
+
+  def input_id(input_id, _id, _input_type, _input_name, _value_for_derived_label, _is_multiple)
       when not is_nil(input_id),
       do: input_id
 
-  def input_id(_input_id, id, _input_type, _input_name, _value_for_derived_label)
+  def input_id(_input_id, id, _input_type, _input_name, _value_for_derived_label, _is_multiple)
       when not is_nil(id),
       do: id
 
-  def input_id(_input_id, _id, input_type, "", _value_for_derived_label)
+  def input_id(_input_id, _id, input_type, "", _value_for_derived_label, _is_multiple)
       when input_type === :select,
       do: nil
 
-  def input_id(_input_id, _id, input_type, input_name, _value_for_derived_label)
+  def input_id(_input_id, _id, input_type, input_name, _value_for_derived_label, _is_multiple)
       when input_type === :select,
       do: input_name |> String.replace(~r/\[\]$/, "")
 
-  def input_id(_input_id, _id, input_type, "", value_for_derived_label)
+  def input_id(_input_id, _id, input_type, "", value_for_derived_label, _is_multiple)
       when input_type === :checkbox or input_type === :radio_button,
       do: value_for_derived_label
 
-  def input_id(_input_id, _id, input_type, input_name, value_for_derived_label)
+  def input_id(_input_id, _id, input_type, input_name, value_for_derived_label, _is_multiple)
       when (input_type === :checkbox or input_type === :radio_button) and is_binary(input_name) do
     cond do
       String.match?(input_name, ~r/\[\]$/) ->
@@ -628,8 +638,10 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
     end
   end
 
-  def input_id(_input_id, _id, _input_type, "", _value_for_derived_label), do: nil
-  def input_id(_input_id, _id, _input_type, input_name, _value_for_derived_label), do: input_name
+  def input_id(_input_id, _id, _input_type, "", _value_for_derived_label, _is_multiple), do: nil
+
+  def input_id(_input_id, _id, _input_type, input_name, _value_for_derived_label, _is_multiple),
+    do: input_name
 
   @spec cleanup_id(nil | binary) :: nil | binary
   def cleanup_id(id) when is_nil(id), do: nil
@@ -650,10 +662,6 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
     # ID and label
     id_attrs = common_id_attrs(assigns, input_type, common_shared_attrs)
 
-    # Form group
-    form_control_attrs =
-      common_form_control_attrs(assigns, id_attrs.input_id, common_shared_attrs)
-
     # Field state
     field_state_attrs =
       common_field_state_attrs(
@@ -661,6 +669,11 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
         id_attrs,
         common_shared_attrs
       )
+
+    # Form control
+    form_control_attrs =
+      common_form_control_attrs(assigns, id_attrs.input_id, common_shared_attrs)
+      |> Map.merge(field_state_attrs |> Map.drop([:caption]))
 
     [
       common_shared_attrs,
@@ -708,8 +721,16 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
     value_for_derived_label = checked_value || value
 
     input_id =
-      input_id(assigns[:input_id], id, input_type, input_name, value_for_derived_label)
-      |> create_dom_id()
+      assigns.input_id ||
+        input_id(
+          assigns[:input_id],
+          id,
+          input_type,
+          input_name,
+          value_for_derived_label,
+          is_multiple
+        )
+        |> create_dom_id()
 
     derived_label =
       case input_type do
@@ -732,31 +753,18 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
          form: form,
          field_or_name: field_or_name
        }) do
-    deprecated_form_group = assigns[:form_group]
-    deprecated_is_form_group = !!assigns[:is_form_group]
-    deprecated_has_form_group = deprecated_is_form_group || !!deprecated_form_group
+    form_control = assigns[:form_control]
+    is_form_control = assigns[:is_form_control] || !!form_control
 
-    ComponentHelpers.deprecated_message(
-      "Deprecated attr form_group: use form_control. Since 0.5.0.",
-      !is_nil(assigns[:form_group])
-    )
-
-    ComponentHelpers.deprecated_message(
-      "Deprecated attr is_form_group: use is_form_control. Since 0.5.0.",
-      assigns[:is_form_group] == true
-    )
-
-    form_control = assigns[:form_control] || deprecated_form_group
-    is_form_control = assigns[:is_form_control] || !!form_control || deprecated_is_form_group
-
-    has_form_control = is_form_control || deprecated_has_form_group
+    has_form_control = is_form_control
 
     form_control_attrs =
       Map.merge(form_control || %{}, %{
         form: form,
         field: field_or_name,
+        input_id: input_id,
         for: input_id,
-        deprecated_has_form_group: deprecated_has_form_group
+        is_full_width: assigns[:is_full_width]
       })
 
     %{
@@ -765,7 +773,7 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
     }
   end
 
-  defp common_field_state_attrs(assigns, %{input_name: input_name, input_id: input_id}, %{
+  defp common_field_state_attrs(assigns, %{input_name: input_name, input_id: input_id, id: id}, %{
          form: form,
          field_or_name: field_or_name
        }) do
@@ -785,10 +793,13 @@ defmodule PrimerLive.Helpers.AttributeHelpers do
     show_message? = !!message && !ignore_errors? && assigns[:type] !== "hidden"
 
     validation_message_id =
-      if !is_nil(field_state.message),
-        do:
-          assigns[:validation_message_id] ||
-            "#{input_id}-validation"
+      cond do
+        !show_message? -> nil
+        assigns[:validation_message_id] -> assigns[:validation_message_id]
+        input_id -> "#{input_id}-validation"
+        id -> "#{id}-validation"
+        true -> random_string()
+      end
 
     validation_marker_class =
       if has_changeset? do

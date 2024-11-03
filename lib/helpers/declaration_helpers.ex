@@ -131,6 +131,15 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
     end
   end
 
+  defmacro common_input_attrs do
+    quote do
+      attr(:common_input_attrs, :map,
+        default: nil,
+        doc: "Used to pass calculated attributes from an input component to the form control."
+      )
+    end
+  end
+
   defmacro form do
     quote do
       attr(:form, :any,
@@ -190,7 +199,8 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
 
   defmacro validation_message_id do
     quote do
-      attr(:validation_message_id, :any,
+      attr(:validation_message_id, :string,
+        default: nil,
         doc: """
         Message ID that is usually passed from the form element component to `input_validation_message`. If not used, the ID will be generated.
         """
@@ -201,6 +211,7 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
   defmacro form_control(the_input_name) do
     quote do
       attr(:form_control, :map,
+        default: nil,
         doc:
           """
           Form control attributes. Places {the_input_name} inside a `form_control/1` component with given attributes, alongside `form` and `field` to generate a form control label.
@@ -208,16 +219,6 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
           If only a automatically generated label is required, use convenience attr `is_form_control` instead.
           """
           |> String.replace("{the_input_name}", unquote(the_input_name))
-      )
-    end
-  end
-
-  defmacro deprecated_form_group(_the_input_name) do
-    quote do
-      attr(:form_group, :map,
-        doc: """
-        Deprecated: use `form_control`. Since `0.5.0`.
-        """
       )
     end
   end
@@ -233,17 +234,6 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
           To configure the form control and label, use attr `form_control`.
           """
           |> String.replace("{the_input_name}", unquote(the_input_name))
-      )
-    end
-  end
-
-  defmacro deprecated_is_form_group(_the_input_name) do
-    quote do
-      attr(:is_form_group, :boolean,
-        default: false,
-        doc: """
-        Deprecated: use `is_form_control`. Since `0.5.0`.
-        """
       )
     end
   end
@@ -291,7 +281,35 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
         default: false,
         doc:
           """
-          Aligns {the_element} to the end (at the right in left-to-right languages).
+          Aligns {the_element} at the end (at the right in left-to-right languages and at the left in right-to-left languages).
+          """
+          |> String.replace("{the_element}", unquote(the_element))
+      )
+    end
+  end
+
+  defmacro offset_x(the_element) do
+    quote do
+      attr(:offset_x, :integer,
+        values: [nil, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        default: nil,
+        doc:
+          """
+          The absolute offset for the {the_element} on the horizontal axis. By default this is the start offset (at the left in left-to-right languages and at the right in right-to-left languages), unless `is_aligned_end` is used, in which case the value defines the end offset.
+          Integer values are translated to px values using the Primer Design System's base-8 scale, as documented in [CSS Utilities: Margin](https://primer.style/foundations/css-utilities/margin):
+          - `0`: `0`
+          - `1`: `4px`
+          - `2`: `8px`
+          - `3`: `16px`
+          - `4`: `24px`
+          - `5`: `32px`
+          - `6`: `40px`
+          - `7`: `48px`
+          - `8`: `64px`
+          - `9`: `80px`
+          - `10`: `96px`
+          - `11`: `112px`
+          - `12`: `128px`
           """
           |> String.replace("{the_element}", unquote(the_element))
       )
@@ -394,16 +412,6 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
       attr(:is_disabled, :boolean,
         default: false,
         doc: "Adjusts the styling to indicate disabled state."
-      )
-    end
-  end
-
-  defmacro form_control_deprecated_has_form_group do
-    quote do
-      attr(:deprecated_has_form_group, :boolean,
-        default: false,
-        doc:
-          "Internal use: detects if deprecated `form_group` or `is_form_group` is used. Used to maintain consistent styling."
       )
     end
   end
@@ -675,6 +683,33 @@ defmodule PrimerLive.Helpers.DeclarationHelpers do
         DeclarationHelpers.slot_style()
         DeclarationHelpers.slot_rest()
       end
+    end
+  end
+
+  defmacro form_control_attrs do
+    quote do
+      alias PrimerLive.Helpers.DeclarationHelpers
+
+      DeclarationHelpers.caption("the form control label")
+      DeclarationHelpers.checkbox_is_multiple()
+      DeclarationHelpers.class()
+      DeclarationHelpers.common_input_attrs()
+      DeclarationHelpers.field()
+      DeclarationHelpers.form_control_classes("form control")
+      DeclarationHelpers.form_control_for()
+      DeclarationHelpers.form_control_is_disabled()
+      DeclarationHelpers.form_control_is_hide_label()
+      DeclarationHelpers.form_control_is_input_group()
+      DeclarationHelpers.form_control_label()
+      DeclarationHelpers.form_control_required_marker()
+      DeclarationHelpers.form_control_slot_inner_block("The form control")
+      DeclarationHelpers.form()
+      DeclarationHelpers.input_id()
+      DeclarationHelpers.rest()
+      DeclarationHelpers.validation_message_id()
+      DeclarationHelpers.validation_message()
+      attr :is_wrap_in_fieldset, :boolean, default: false
+      attr(:is_full_width, :boolean, default: false, doc: "Full width control.")
     end
   end
 end

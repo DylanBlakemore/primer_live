@@ -87,7 +87,6 @@ defmodule PrimerLive.TestComponents.TextInputTest do
 
     run_test(
       ~H"""
-      <div><.text_input type={:x} /></div>
       <div><.text_input type="color" /></div>
       <div><.text_input type="date" /></div>
       <div><.text_input type="datetime-local" /></div>
@@ -167,28 +166,6 @@ defmodule PrimerLive.TestComponents.TextInputTest do
     )
   end
 
-  test "Attribute: is_form_group (deprecatd)" do
-    assigns = %{}
-
-    run_test(
-      ~H"""
-      <.text_input form={:user} name="first_name" is_form_group />
-      """,
-      __ENV__
-    )
-  end
-
-  test "Attribute: is_form_group with input_id" do
-    assigns = %{}
-
-    run_test(
-      ~H"""
-      <.text_input form={:user} name="first_name" is_form_group input_id="xyz" />
-      """,
-      __ENV__
-    )
-  end
-
   test "Attribute: form_control (label)" do
     assigns = %{}
 
@@ -198,25 +175,6 @@ defmodule PrimerLive.TestComponents.TextInputTest do
         form={:user}
         field="first_name"
         form_control={
-          %{
-            label: "Some label"
-          }
-        }
-      />
-      """,
-      __ENV__
-    )
-  end
-
-  test "Attribute: form_group (label) (deprecated)" do
-    assigns = %{}
-
-    run_test(
-      ~H"""
-      <.text_input
-        form={:user}
-        field="first_name"
-        form_group={
           %{
             label: "Some label"
           }
@@ -345,17 +303,6 @@ defmodule PrimerLive.TestComponents.TextInputTest do
     run_test(
       ~H"""
       <.text_input name="first_name" placeholder="Enter your first name" />
-      """,
-      __ENV__
-    )
-  end
-
-  test "Extra attributes: explicit aria_label" do
-    assigns = %{}
-
-    run_test(
-      ~H"""
-      <.text_input name="first_name" aria_label="Enter your first name" />
       """,
       __ENV__
     )

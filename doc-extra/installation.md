@@ -5,7 +5,7 @@
 Add PrimerLive as a dependency in your Phoenix application's `mix.exs`
 
 ```
-{:primer_live, "~> 0.8"}
+{:primer_live, "~> 0.9"}
 ```
 
 Run `mix.deps get`.
@@ -46,6 +46,26 @@ Otherwise:
 ```
 <link phx-track-static rel="stylesheet" href="/primer_live/primer-live.min.css">
 <script defer phx-track-static type="text/javascript" src={"/primer_live/primer-live.min.js"}></script>
+```
+
+### Scoped CSS
+
+The relatively new `@scope` rule enables localized CSS. In practical terms, it allows multiple CSS libraries to coexist within a single codebase without causing style conflicts. For example, use Tailwind components in one section of the page, and use PrimerLive components in another section.
+
+Browser support for the @scope rule is still limited. For more details, see [Can I use: @scope rule](https://caniuse.com/css-cascade-scope). If you're using PrimerLive in a controlled environment where users have access to the latest browsers, you may consider experimenting with this feature.
+
+To use PrimerLive CSS with CSS scope:
+- Change the CSS import to `primer-live-scoped.min.css` (or `primer-live-scoped.css`).
+- Create a container with class `primer-live` (not the `html` element) where you will be using PrimerLive components.
+
+Example:
+```
+<html>
+  <body>
+    <section>Some content</section>
+    <section class="primer-live">PrimerLive components</section>
+  </body>
+</html>
 ```
 
 ## 5. Add the Prompt hook

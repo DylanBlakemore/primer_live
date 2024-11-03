@@ -4,7 +4,7 @@ defmodule PrimerLive.MixProject do
   def project do
     [
       app: :primer_live,
-      version: "0.8.0",
+      version: "0.9.0",
       elixir: "~> 1.17",
       homepage_url: "https://github.com/ArthurClemens/primer_live",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -93,6 +93,7 @@ defmodule PrimerLive.MixProject do
       extras: [
         "doc-extra/installation.md",
         "doc-extra/usage.md",
+        "doc-extra/styling.md",
         "doc-extra/menus-and-dialogs.md",
         "CHANGELOG.md",
         "LICENSE.md"
@@ -121,7 +122,7 @@ defmodule PrimerLive.MixProject do
       #
       # Test with writing failing test results to test/assertion_failures:
       #    WRITE_FAILURES=1 mix test
-      #    WRITE_FAILURES=1 mix test some-file.exs
+      #    WRITE_FAILURES=1 mix test test/component_tests/select_test.exs
       #
       # To view the assertions:
       #    elixir scripts/elixir/assertions_viewer.exs
@@ -149,8 +150,17 @@ defmodule PrimerLive.MixProject do
         "cmd npm --prefix assets run build -- --format=iife --target=es2016 --outfile=../priv/static/primer-live.js",
         "cmd npm --prefix assets run build -- --format=cjs --sourcemap --outfile=../priv/static/primer-live.cjs.js",
         "cmd npm --prefix assets run build -- --format=iife --target=es2016 --minify --outfile=../priv/static/primer-live.min.js",
+        # Scoped CSS (discard js later)
+        "cmd SCOPED=1 npm --prefix assets run build -- --format=iife --target=es2016 --minify --outfile=../priv/static/primer-live-scoped.min.js",
+        "cmd SCOPED=1 npm --prefix assets run build -- --format=iife --target=es2016 --outfile=../priv/static/primer-live-scoped.js",
+        # Post-process scoped CSS
+        "cmd npm --prefix assets run post-process-scoped-css -- --file=priv/static/primer-live-scoped.css --prettify=true",
+        "cmd npm --prefix assets run post-process-scoped-css -- --file=priv/static/primer-live-scoped.min.css --prettify=false",
+        # Clean up
         "cmd rm -rf priv/static/*.cjs.css*",
-        "cmd rm -rf priv/static/*.esm.css*"
+        "cmd rm -rf priv/static/*.esm.css*",
+        "cmd rm -rf priv/static/*-scoped.js",
+        "cmd rm -rf priv/static/*-scoped.min.js"
       ],
       # CI
       ci: [

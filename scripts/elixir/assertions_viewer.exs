@@ -1,3 +1,5 @@
+#!/usr/bin/env elixir
+
 Application.put_env(:sample, PrimerLiveWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4001],
   server: true,
@@ -21,6 +23,7 @@ end
 defmodule PrimerLiveWeb.ComponentLive do
   use Phoenix.LiveView, layout: {__MODULE__, :live}
   alias PrimerLive.Component, as: Primer
+  alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
     assertion_groups =
@@ -58,6 +61,8 @@ defmodule PrimerLiveWeb.ComponentLive do
 
   defp phx_vsn, do: Application.spec(:phoenix, :vsn)
   defp lv_vsn, do: Application.spec(:phoenix_live_view, :vsn)
+  defp pl_vsn, do: "0.8.0"
+  # Application.spec(:primer_live, :vsn)
 
   def render("live.html", assigns) do
     ~H"""
@@ -67,8 +72,14 @@ defmodule PrimerLiveWeb.ComponentLive do
       src={"https://cdn.jsdelivr.net/npm/phoenix_live_view@#{lv_vsn()}/priv/static/phoenix_live_view.min.js"}
     >
     </script>
+    <script src={"https://cdn.jsdelivr.net/npm/primer-live@#{pl_vsn()}/priv/static/primer-live.js"}>
+    </script>
     <script>
-      let liveSocket = new window.LiveView.LiveSocket("/live", window.Phoenix.Socket)
+      let hooks = {};
+      hooks.Prompt = window.Prompt;
+      let liveSocket = new window.LiveView.LiveSocket("/live", window.Phoenix.Socket, {
+        hooks
+      })
       liveSocket.connect()
     </script>
     <link phx-track-static rel="stylesheet" href="/primer_live/primer-live.min.css" />
@@ -131,6 +142,12 @@ defmodule PrimerLiveWeb.ComponentLive do
     <div class="page" data-component={@path}>
       <Primer.header class="topbar">
         <:item class="d-none d-md-flex">PrimerLive Assertions Viewer</:item>
+        <:item is_full_width />
+        <:item>
+          <Primer.button phx-click={JS.toggle_attribute({"dir", "rtl", ""}, to: "html")}>
+            Toggle RTL
+          </Primer.button>
+        </:item>
       </Primer.header>
       <Primer.layout is_divided>
         <:sidebar>

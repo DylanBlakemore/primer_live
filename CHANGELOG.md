@@ -1,5 +1,68 @@
 # Changelog
 
+## 0.9.0 (not released)
+
+### Changes
+
+- [Text input](`PrimerLive.Component.text_input/1`): Set disabled color on read-only field with inset style.
+- [Checkbox group](`PrimerLive.Component.checkbox_group/1`) and [Radio group](`PrimerLive.Component.radio_group/1`): Show required marker in legend.
+- [Action menu](`PrimerLive.Component.action_menu/1`) and [Select menu](`PrimerLive.Component.select_menu/1`): Added attribute `offset_x` to define the absolute offset for the menu on the horizontal axis.
+- [Header](`PrimerLive.Component.header/1`): added attributes `variant="base"` to create a light colored header, and `is_compact` for a smaller vertical height.
+- Updated upstream Primer Design System libraries. This update includes a number of changes to modified CSS Custom Properties.
+  - Updated upstream dependency `@primer/css` to `21.5.0`.
+  - Added `@primer/view-components` version `0.34.0`. This is the Rails version of Primer Design, which is the most developed so far.
+  - Updated [Octicon](`PrimerLive.Component.octicon/1`) icons to version `v19.12.0`.
+- Added support for right-to-left languages.
+- Added support for `@scope`, allowing PrimerLive to be used alongside other CSS libraries. See usage instructions in [Installation](doc-extra/installation.md#scoped-css).
+- Added documentation [Styling](doc-extra/styling.md). This contains notes about styling with custom CSS and pre-made classes, reusing styled components and support for right-to-left languages.
+
+### Depreciations
+
+Standalone `form_control` as wrapper is soft-deprecated.
+
+The use of `form_control` as wrapper component around a form input component was causing compatibility issues with displaying validation messages. Since input components should be able to display a validation message even when not wrapped inside a `form_control`, it became difficult to distinguish between a validation messages originating from the `form_control` and one originating from the nested input.
+
+With the introduction of `checkbox_group` and `radio_group` in version 0.5, there has been less need for a standalone form control wrapper.
+
+Overall, moving `form_control` to the background and using it only as an internal component resolves a range of problems.
+
+See "Updating to 0.9" below.
+
+### Removals
+
+- `form_group` was soft-deprecated in 0.5.0 and has been removed, along with component attributes `form_group` and `is_form_group`.
+
+### Bug fixes
+
+- [Checkbox group](`PrimerLive.Component.checkbox_group/1`) and [Radio group](`PrimerLive.Component.radio_group/1`): Restored display of validation message.
+- [Textarea](`PrimerLive.Component.textarea/1`): Set correct success color when displaying success feedback.
+
+### Updating to 0.9
+
+#### form_control
+
+There have 2 ways to create a form control: as a wrapper, and as an input attribute. If you've been using `form_control` as wrapper around inputs, change:
+
+```
+<.form :let={f} for={@changeset}>
+  <.form_control form={f} field={:first_name} for="first-name">
+    <.text_input form={f} field={:first_name} id="first-name" />
+  </.form_control>
+</.form>
+```
+
+to
+
+```
+<.form :let={f} for={@changeset}>
+  <.text_input form={f} field={:first_name} id="first-name" is_form_control />
+</.form>
+```
+
+#### CSS Custom Properties (Variables)
+
+If you are using CSS Custom Properties from the Primer Design System, these may need to be updated. Verify the current available options in [primer-live.css](https://github.com/ArthurClemens/primer_live/blob/development/priv/static/primer-live.css).
+
 ## 0.8.0
 
 ### Refactoring of dialogs, drawers, and menus
@@ -515,3 +578,7 @@ Bug fix:
 ## 0.1.1
 
 First release.
+
+```
+
+```
